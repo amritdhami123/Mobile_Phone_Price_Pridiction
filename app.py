@@ -59,7 +59,7 @@ if model is not None:
         cpu_freq = cpu_freq_options[st.selectbox('CPU Frequency', list(cpu_freq_options.keys()), index=6)]
     
     with col2:
-        st.subheader("💾 Memory & Camera")
+        st.subheader("📊 More Specifications")
         internal_mem = internal_mem_options[st.selectbox('Internal Memory', list(internal_mem_options.keys()), index=3)]
         ram = ram_options[st.selectbox('RAM', list(ram_options.keys()), index=4)]
         rear_cam = rear_cam_options[st.selectbox('Rear Camera', list(rear_cam_options.keys()), index=8)]

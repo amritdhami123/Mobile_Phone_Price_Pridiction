@@ -13,7 +13,7 @@ st.set_page_config(
 )
 
 st.title('📱 Mobile Phone Price Predictor')
-st.write('Enter the phone specifications below to get an estimated price.')
+st.write('Get an estimated price for your mobile phone.')
 st.markdown("---")
 
 # Initialize session state for reset

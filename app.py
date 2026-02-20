@@ -1,21 +1,11 @@
 import streamlit as st
-import pickle
-import numpy as np
-
-# Load model
-model = pickle.load(open("model.pkl", "rb"))
-
-# App title
-st.title("Mobile Phone Price Prediction")
-
-# User inputs# app.py
-import streamlit as st
 import joblib
+import pickle
 import numpy as np
 import pandas as pd
 import os
 
-# --- Page configuration ---
+# Set page configuration
 st.set_page_config(
     page_title="Mobile Price Predictor",
     page_icon="📱",
@@ -26,11 +16,11 @@ st.title('📱 Mobile Phone Price Predictor')
 st.write('Enter the phone specifications below to get an estimated price.')
 st.markdown("---")
 
-# --- Initialize session state for reset ---
+# Initialize session state for reset
 if 'reset_clicked' not in st.session_state:
     st.session_state.reset_clicked = False
 
-# --- Load the trained model ---
+# Load the trained model
 @st.cache_resource
 def load_model():
     # Use relative path to the models folder
@@ -56,8 +46,8 @@ if model is not None:
     front_cam_options = {f"{x} MP": x for x in range(2, 61, 2)}
     battery_options = {f"{x} mAh": x for x in range(2000, 6001, 250)}
     thickness_options = {f"{round(x, 1)} mm": round(x, 1) for x in np.arange(7.0, 12.1, 0.5)}
-
-    # --- Layout columns ---
+    
+    # --- Layout ---
     col1, col2 = st.columns(2)
     
     with col1:
@@ -69,7 +59,7 @@ if model is not None:
         cpu_freq = cpu_freq_options[st.selectbox('CPU Frequency', list(cpu_freq_options.keys()), index=6)]
     
     with col2:
-        st.subheader("⚙️ Other Specifications")
+        st.subheader("💾 Memory & Camera")
         internal_mem = internal_mem_options[st.selectbox('Internal Memory', list(internal_mem_options.keys()), index=3)]
         ram = ram_options[st.selectbox('RAM', list(ram_options.keys()), index=4)]
         rear_cam = rear_cam_options[st.selectbox('Rear Camera', list(rear_cam_options.keys()), index=8)]
@@ -77,42 +67,37 @@ if model is not None:
         battery = battery_options[st.selectbox('Battery Capacity', list(battery_options.keys()), index=9)]
         thickness = thickness_options[st.selectbox('Thickness', list(thickness_options.keys()), index=2)]
 
-    # --- Input array in correct order ---
-    input_data = np.array([[
-        weight, screen_size, ppi, cpu_core, cpu_freq,
-        internal_mem, ram, rear_cam, front_cam, battery, thickness
-    ]])
+    # --- Prepare input array ---
+    input_data = np.array([[weight, screen_size, ppi, cpu_core, cpu_freq,
+                            internal_mem, ram, rear_cam, front_cam, battery, thickness]])
 
     # --- Buttons ---
-    st.markdown("---")
     col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 1])
     
     with col_btn1:
-        if st.button('🔄 Reset All', use_container_width=True):
+        if st.button('🔄 Reset All'):
             st.session_state.reset_clicked = True
             st.rerun()
     
     with col_btn2:
-        predict_clicked = st.button('🔮 Predict Price', use_container_width=True)
+        predict_clicked = st.button('🔮 Predict Price')
     
-    # --- Handle reset ---
+    # Handle reset
     if st.session_state.reset_clicked:
         st.session_state.reset_clicked = False
-        st.info("✅ All values have been reset to defaults. Adjust specifications above.")
+        st.info("✅ All values have been reset.")
         st.stop()
     
-    # --- Prediction ---
+    # Prediction
     if predict_clicked:
         prediction = model.predict(input_data)[0]
         st.success(f"The predicted price is: **Rs.{prediction:,.2f}**")
         
-        # --- Display specs summary ---
-        st.subheader("📋 Specifications Summary")
         specs_summary = {
             'Weight': f"{weight} g",
             'Screen Size': f"{screen_size}\"",
-            'PPI': f"{ppi}",
-            'CPU Cores': f"{cpu_core}",
+            'PPI': ppi,
+            'CPU Cores': cpu_core,
             'CPU Frequency': f"{cpu_freq} GHz",
             'Internal Memory': f"{internal_mem} GB",
             'RAM': f"{ram} GB",
@@ -121,15 +106,8 @@ if model is not None:
             'Battery': f"{battery} mAh",
             'Thickness': f"{thickness} mm"
         }
-        specs_df = pd.DataFrame(list(specs_summary.items()), columns=['Specification', 'Value'])
-        st.table(specs_df)
+        st.subheader("📋 Specifications Summary")
+        st.table(pd.DataFrame(list(specs_summary.items()), columns=['Specification', 'Value']))
 
-ram = st.number_input("RAM (GB)")
-storage = st.number_input("Storage (GB)")
-battery = st.number_input("Battery (mAh)")
 
-# Predict button
-if st.button("Predict Price"):
-    features = np.array([[ram, storage, battery]])
-    prediction = model.predict(features)
-    st.success(f"Predicted Price: {prediction[0]}")
+

@@ -80,7 +80,7 @@ if model is not None:
             st.rerun()
     
     with col_btn2:
-        predict_clicked = st.button('🔮 Predict Price')
+        predict_clicked = st.button('Predict Price')
     
     # Handle reset
     if st.session_state.reset_clicked:
@@ -93,7 +93,7 @@ if model is not None:
         prediction = model.predict(input_data)[0]
         st.success(f"The predicted price is: **Rs.{prediction:,.2f}**")
         
-        specs_summary = {
+        summary = {
             'Weight': f"{weight} g",
             'Screen Size': f"{screen_size}\"",
             'PPI': ppi,
@@ -106,8 +106,8 @@ if model is not None:
             'Battery': f"{battery} mAh",
             'Thickness': f"{thickness} mm"
         }
-        st.subheader("📋 Specifications Summary")
-        st.table(pd.DataFrame(list(specs_summary.items()), columns=['Specification', 'Value']))
+        st.subheader("📋Summary")
+        st.table(pd.DataFrame(list(summary.items()), columns=['Specification', 'Value']))
 
 
 
